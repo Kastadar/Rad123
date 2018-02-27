@@ -1,0 +1,317 @@
+hello
+
+db.createCollection("Product5")
+db.Product5.createIndex({category: 1, price:1})
+sh.setBalancerState(false)
+sh.addShardTag("shard0000","Memory")
+sh.addShardTag("shard0001","Screen")
+sh.shardCollection("DB.Product5",{ "category": 1 ,"price":1} )
+sh.addTagRange("DB.Product5",{price:1001},{price:2000},"Screen")
+sh.setBalancerState(true)
+sh.isBalancerRunning()
+sh.status()
+
+
+db.Product5.createIndex({country: 1, price:1})
+sh.disableBalancing("test.Product5")
+sh.addShardTag("shard0000","First")
+sh.addShardTag("shard0001","Second")
+sh.shardCollection("DB.Product5",{ "country": 1 ,"price":1} )
+sh.addTagRange("DB.Product5",{country:"US", price:MinKey},{country:"US", price:MaxKey},"First")
+sh.addTagRange("DB.Product5",{country:"EU", price:MinKey},{country:"EU", price:MaxKey},"Second")
+sh.enableBalancing("DB.Product5")
+sh.isBalancerRunning()
+sh.status()
+db.Product5.insertOne( { country:"US" , model:"iPhone6" , producer:"Apple" , price:700 } )
+db.Product5.insertOne( { country:"EU" , model:"iPhone7" , producer:"Apple" , price:330 } )
+db.Product5.insertOne( { country:"DE" , model:"iPhone10" , producer:"Apple" , price:7110 } )
+
+
+
+
+
+
+
+
+
+
+LAB 7!!!
+after creating new shards with file RULE
+at mongos
+use TestDB
+db.createCollection("Lab7")
+sh.shardCollection("TestDB.Lab7", { id  : "hashed" } )
+db.Lab7.insertMany( [ {id: 1, category:"Headphones" , model:"HyperX Cloud" , producer:"HyperX" ,typehead:"Closed",freqdiap:23000, price:200 } ,
+                        {id: 2, category:"Headphones" , model:"HyperX Cloud2" , producer:"HyperX" ,typehead:"Closed",freqdiap:27000, price:300 } ,
+                        { id: 3, category:"Processor" , model:"Intel Core i7 7600k", frequency:3.8 ,cores:4, producer:"Intel" , price:400 } ,
+                        { id: 4, category:"Videocard" , model:"AMD Radeon RX 480" ,videomemory:"8gb",videomemoryfreq:980, producer:"Amd" , price:400 } ,
+                        { id: 5, category:"Videocard" , model:"GeForce GTX 1080 TI" ,videomemory:"16gb",videomemoryfreq:1100, producer:"Nvidia" , price:800 } ,
+                        { id: 6, category:"Processor" , model:"Amd Ryzen 7 1700x" , frequency:3.4 ,cores:8, producer:"Amd" , price:550 } ,
+                        { id: 7, category:"Headphones" , model:"Razer Kraken" , producer:"Razer" ,typehead:"Closed",freqdiap:22000, price:220 } ,
+                        { id: 8, category:"Headphones" , model:"Razer Kraken" , producer:"Razer" ,typehead:"Open",freqdiap:15000, price:100 } ,
+                        { id: 9, category:"Screen" , model:"LG 27MP70-P" , producer:"LG", screensize:27, monitortype:"IPS" , price:400 } ,
+                        { id: 10, category:"Screen" , model:"Dell P2317H" , producer:"Dell", screensize:23, monitortype:"TN" , price:250 } ,
+                        { id: 11, category:"Screen" , model:"Samsung S22E200B" , producer:"Samsung", screensize:21.5, monitortype:"TN" , price:200 } ,
+                        { id: 12, category:"Screen" , model:"Samsung Curved LC24F390F" , producer:"Samsung", screensize:23.5, monitortype:"VA" , price:500 } ,
+                        { id: 13, category:"Screen" , model:"BenQ GW2470HE" , producer:"BenQ", screensize:24, monitortype:"TN" , price:500 } ,
+                        { id: 14, category:"Screen" , model:"Samsung U28E590D" , producer:"Samsung", screensize:28, monitortype:"IPS" , price:600 } ,
+                        { id: 15, category:"Screen" , model:"LG 23MP64VQ-P" , producer:"LG", screensize:23, monitortype:"IPS" , price:300 } ,
+                        { id: 16, category:"Memory" , model:"Kingston DDR-4-2400 4096MB PC-419200", type:"DDR4" , size:"4096MB" , producer:"Kingston" , price:105 } ,
+                        { id: 17, category:"Memory" , model:"Goodram DDR-4-2400 2048MB PC-419200", type:"DDR4" , size:"2048MB"  , producer:"Goodram" , price:45 } ,
+                        { id: 18, category:"Memory" , model:"Kingston DDR-3-2400 8192MB PC-419200", type:"DDR3" , size:"8192MB" , producer:"Kingston" , price:115 } ,
+                        { id: 19, category:"Memory" , model:"Goodram DDR-4-2400 8192MB PC-419200", type:"DDR4" , size:"8192MB"  , producer:"Goodram" , price:150 }])
+
+
+db.createCollection("orders")
+sh.shardCollection("TestDB.orders", { id  : "hashed" } )
+
+
+db.orders.insertMany([{
+		"year" : 2011,
+		"month" : 1,
+        "id" : 13,
+        "total_sum" : 1923.4,
+        "customer" : {
+            "name" : "Andrii",
+            "surname" : "Rodinov",
+            "phones" : [ 9876543, 1234567],
+            "address" : "PTI, Peremohy 37, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Andrii Rodionov",
+            "cardId" : 12345678
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 1
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 2
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 3
+
+            }
+        ]
+    },
+	{
+		"year" : 2012,
+		"month" : 10,
+        "id" : 14,
+        "total_sum" : 500,
+        "customer" : {
+            "name" : "Andrii",
+            "surname" : "Rodinov",
+            "phones" : [ 9876543, 1234567],
+            "address" : "PTI, Peremohy 37, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Andrii Rodionov",
+            "cardId" : 12345678
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 20
+            }
+        ]
+    },
+    {    
+		"year" : 2011,
+		"month" : 3,
+        "id" : 15,
+        "total_sum" : 20043.4,
+        "customer" : {
+            "name" : "Valeriy",
+            "surname" : "Demeshko",
+            "phones" : [ 67339245, 32782945],
+            "address" : "Borschaga 148, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Valeriy Demeshko",
+            "cardId" : 76594209
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 9
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 3
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 4
+            },
+	    {
+                "_ref" : "Lab7",
+                "id" : 19
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 2
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 2
+            },
+	    {
+                "_ref" : "Lab7",
+                "id" : 9
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 6
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 8
+            }
+        ]
+    },
+    {    
+    "id" : 16,
+	"year" : 2012,
+	"month" : 1,
+    "total_sum" : 1003,
+    "customer" : {
+        "name" : "Daniil",
+        "surname" : "Soloviyew",
+        "phones" : [ 5038382495, 22224667],
+        "address" : "Chornovola street 150, Kyiv, UA"
+    },
+    "payment" : {
+        "card_owner" : "Daniil Soloviyew",
+        "cardId" : 2345673257
+    },
+    "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 9
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 4
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 19
+            }
+    ]
+    }])
+
+
+
+db.orders.insertMany([{
+		"year" : 2011,
+		"month" : 1,
+        "id" : 8,
+        "total_sum" : 350,
+        "customer" : {
+            "name" : "Andrii",
+            "surname" : "Rodinov",
+            "phones" : [ 9876543, 1234567],
+            "address" : "PTI, Peremohy 37, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Andrii Rodionov",
+            "cardId" : 12345678
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 11
+            }
+        ]
+    },
+	{
+        "id" : 7,
+		"year" : 2012,
+		"month" : 10,
+        "total_sum" : 800,
+        "customer" : {
+            "name" : "Andrii",
+            "surname" : "Rodinov",
+            "phones" : [ 9876543, 1234567],
+            "address" : "PTI, Peremohy 37, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Andrii Rodionov",
+            "cardId" : 12345678
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 7
+            },
+	    	{
+                "_ref" : "Lab7",
+                "id" : 12
+            },
+			{
+                "_ref" : "Lab7",
+                "id" : 4
+            }
+        ]
+    },
+    {    
+        "id" : 6,
+		"year" : 2013,
+		"month" : 3,
+        "total_sum" : 1400,
+        "customer" : {
+            "name" : "Valeriy",
+            "surname" : "Demeshko",
+            "phones" : [ 67339245, 32782945],
+            "address" : "Borschaga 148, Kyiv, UA"
+        },
+        "payment" : {
+            "card_owner" : "Valeriy Demeshko",
+            "cardId" : 76594209
+        },
+        "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 6
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 3
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 10
+            },
+            {
+                "_ref" : "Lab7",
+                "id" : 18
+            }
+        ]
+    },
+    {    
+    "id" : 5, 
+	"year" : 2012,
+	"month" : 1,
+    "total_sum" : 154,
+    "customer" : {
+        "name" : "Daniil",
+        "surname" : "Soloviyew",
+        "phones" : [ 5038382495, 22224667],
+        "address" : "Chornovola street 150, Kyiv, UA"
+    },
+    "payment" : {
+        "card_owner" : "Daniil Soloviyew",
+        "cardId" : 2345673257
+    },
+    "order_items_id" : [
+            {
+                "_ref" : "Lab7",
+                "id" : 5
+            },
+    ]
+    }])
+

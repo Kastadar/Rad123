@@ -1,0 +1,103 @@
+/*
+create (dan:Customers{name: "Danil", surname: "Soloviov", age:21})
+create (kola:Customers{name: "Nicolas", surname: "Pochvirnyi", age:21})
+create (kas:Customers{name: "Kastor", surname: "Deus", age:32})
+
+create (iphone:Items{category:"Phone", name:"IPhone 8"})
+create (samsung:Items{category:"Phone", name:"Samsung Note 8"})
+create (asus:Items{category:"Motherboard", name:"Asus"})
+create (msi:Items{category:"Motherboard", name:"MSI"})
+create (king:Items{category:"Memory", name:"Kingston"})
+create (god:Items{category:"Memory", name:"Goodram"})
+create (tp:Items{category:"Routers", name:"TP-LINK"})
+create (xiaomi:Items{category:"Routers", name:"Xiaomi"})
+create (lg:Items{category:"Screen", name:"LG"})
+create (dell:Items{category:"Screen", name:"Dell"})
+
+create (danord1:Orders{name:"Order 1 Danil", number:1})
+create (danord2:Orders{name:"Order 2 Danil", number:2})
+create (danord3:Orders{name:"Order 3 Danil", number:3})
+create (kolaord1:Orders{name:"Order 1 Nicolas", number:4})
+create (kolaord2:Orders{name:"Order 2 Nicolas", number:5})
+create (kasord1:Orders{name:"Order 1 Kastor", number:6})
+create (kasord2:Orders{name:"Order 2 Kastor", number:7})
+
+create 
+(dan)-[:Set]->(danord1),
+(dan)-[:Set]->(danord2),
+(dan)-[:Set]->(danord3),
+(dan)-[:Look]->(iphone),
+(dan)-[:Look]->(samsung),
+(dan)-[:Look]->(lg),
+(dan)-[:Look]->(tp),
+(dan)-[:Look]->(asus),
+(dan)-[:Look]->(xiaomi),
+(dan)-[:Look]->(msi),
+(dan)-[:Buy]->(iphone),
+(dan)-[:Buy]->(samsung),
+(dan)-[:Buy]->(lg),
+(dan)-[:Buy]->(tp),
+(dan)-[:Buy]->(asus),
+(dan)-[:Buy]->(xiaomi),
+(danord1)-[:Contain]->(iphone),
+(danord1)-[:Contain]->(samsung),
+(danord1)-[:Contain]->(lg),
+(danord2)-[:Contain]->(tp),
+(danord2)-[:Contain]->(asus),
+(danord3)-[:Contain]->(xiaomi)
+
+create 
+(kola)-[:Set]->(kolaord1),
+(kola)-[:Set]->(kolaord2),
+(kola)-[:Look]->(iphone),
+(kola)-[:Look]->(msi),
+(kola)-[:Look]->(asus),
+(kola)-[:Look]->(king),
+(kola)-[:Look]->(dell),
+(kola)-[:Buy]->(iphone),
+(kola)-[:Buy]->(king),
+(kola)-[:Buy]->(asus),
+(kolaord1)-[:Contain]->(king),
+(kolaord1)-[:Contain]->(asus),
+(kolaord2)-[:Contain]->(iphone)
+
+create 
+(kas)-[:Set]->(kasord1),
+(kas)-[:Look]->(tp),
+(kas)-[:Look]->(xiaomi),
+(kas)-[:Look]->(king),
+(kas)-[:Look]->(god),
+(kas)-[:Buy]->(king),
+(kasord1)-[:Contain]->(king),
+
+(kas)-[:Set]->(kasord2),
+(kasord2)-[:Contain]->(asus)
+*/
+
+
+///////////////////////////////////////////////////////////////////
+
+1.match (:Orders{number:4})-[:Contain]->(name) return name
+2.match (:Customers{name:"Danil"})-[:Set]->(name) return name
+3.match (:Customers{name:"Danil"})-[:Buy]->(name) return name
+4.match (:Customers{name:"Danil"})-[:Look]->(name) return name
+5.match (:Items{name:"Asus"})<-[:Contain]-(:Orders)-[:Contain]->(name) return name
+6.match (:Items{name:"Asus"})<-[:Contain]-(:Orders)<-[:Set]-(name) return name
+7.match (:Items{name:"Kingston"})<-[:Buy]-(:Customers{name:"Kastor"})-[:Buy]->(name) return name // для одного кастомера
+match (:Items{name:"Kingston"})<-[:Buy]-()-[:Buy]->(name) return name  // для всех
+8.match (:Items{name:"IPhone 8"})<-[:Buy]-(:Customers{name:"Danil"})-[:Look]->(name) return name
+match (:Items{name:"IPhone 8"})<-[:Buy]-()-[:Look]->(name) return name
+
+
+///////////////////////////////////////////////////////////////////
+
+match (:Items{name:"Asus"})<-[:Contain]-(:Orders)<-[:Set]-()-[:Set]->()-[:Contain]->(name) return name, count(*)
+union
+match (:Items{name:"Asus"})<-[:Contain]-(:Orders)<-[:Set]-()-[:Look]->(name) 
+return name, count(*)
+
+
+///////////////////////////////////////////////////////////////////
+//Удалить все
+MATCH (n)
+DETACH DELETE n
